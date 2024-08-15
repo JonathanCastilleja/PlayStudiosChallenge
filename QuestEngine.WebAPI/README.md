@@ -61,7 +61,7 @@ This folder contains the implementation of the Quest Engine Web API, which provi
  3. Generate Response: Returns the total quest percent completed and the last milestone index completed.
 
 ### Sequence Diagram
-[Sequence Diagram](docs/SequenceDiagram.png)
+![Sequence Diagram](docs/SequenceDiagram.png)
 
 ## Quest Configuration
 
