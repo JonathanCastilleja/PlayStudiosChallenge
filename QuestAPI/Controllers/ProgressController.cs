@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using QuestAPI.Models;
 
 namespace QuestAPI.Controllers
@@ -8,15 +9,17 @@ namespace QuestAPI.Controllers
     [ApiController]
     public class ProgressController : ControllerBase
     {
+        private readonly QuestConfig _questConfig;
+        public ProgressController(IOptions<QuestConfig> questConfig)
+        {
+            _questConfig = questConfig.Value;
+        }
+
         [HttpPost]
         public IActionResult Post(ProgressData progressData){
-            double rateFromBet = 0.1; //TODO move to config file
-            double levelBonusRate = 0.5; //TODO move to config file
-            int totalQuestPointsToComplete = 1000; //TODO move to config file
-            int milestonesPerQuest = 10; //TODO move to config file
-            int questPointsEarned = (int)((progressData.ChipAmountBet * rateFromBet) + (progressData.PlayerLevel * levelBonusRate));
-            double totalQuestPercentCompleted = (double) 100 * questPointsEarned / totalQuestPointsToComplete;
-            int milestonesCompleted = questPointsEarned / (totalQuestPointsToComplete / milestonesPerQuest);
+            int questPointsEarned = (int)((progressData.ChipAmountBet * _questConfig.RateFromBet) + (progressData.PlayerLevel * _questConfig.LevelBonusRate));
+            double totalQuestPercentCompleted = (double) 100 * questPointsEarned / _questConfig.TotalQuestPointsToComplete;
+            int milestonesCompleted = questPointsEarned / (_questConfig.TotalQuestPointsToComplete / _questConfig.MilestonesPerQuest);
             var response = new {
                 QuestPointsEarned = questPointsEarned,
                 TotalQuestPercentCompleted = totalQuestPercentCompleted,

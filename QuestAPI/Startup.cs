@@ -1,4 +1,5 @@
 using System;
+using QuestAPI.Models;
 
 namespace QuestAPI{
     public class Startup{
@@ -11,6 +12,7 @@ namespace QuestAPI{
         public void ConfigureServices(IServiceCollection services){
             services.AddControllers();
             services.AddSwaggerGen();
+            services.Configure<QuestConfig>(Configuration.GetSection("QuestConfig"));
         }
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env){
             if (env.IsDevelopment()){
