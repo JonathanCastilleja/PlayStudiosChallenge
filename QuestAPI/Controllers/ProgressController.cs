@@ -19,11 +19,15 @@ namespace QuestAPI.Controllers
         public IActionResult Post(ProgressData progressData){
             int questPointsEarned = (int)((progressData.ChipAmountBet * _questConfig.RateFromBet) + (progressData.PlayerLevel * _questConfig.LevelBonusRate));
             double totalQuestPercentCompleted = (double) 100 * questPointsEarned / _questConfig.TotalQuestPointsToComplete;
-            int milestonesCompleted = questPointsEarned / (_questConfig.TotalQuestPointsToComplete / _questConfig.MilestonesPerQuest);
+            var milestonesCompleted = _questConfig.Milestones?.Where(milestone => questPointsEarned >= milestone.MilestonePointsToComplete).OrderBy(milestone => milestone.MilestonePointsToComplete);
             var response = new {
                 QuestPointsEarned = questPointsEarned,
                 TotalQuestPercentCompleted = totalQuestPercentCompleted,
-                MilestonesCompleted = milestonesCompleted
+                MilestonesCompleted = new {
+                    MilestoneIndex = milestonesCompleted?.Count() ?? 0,
+                    ChipsAwarded = milestonesCompleted?.Count()==0? 0 : milestonesCompleted?.Last().ChipsAward ?? 0
+                }
+                
             };
             return Ok(response);
         }
