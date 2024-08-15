@@ -49,7 +49,7 @@ namespace QuestEngine.Tests{
             // Arrange
             var progressData = new ProgressData
             {
-                PlayerId = "player1",
+                PlayerId = "player2",
                 PlayerLevel = 50,
                 ChipAmountBet = 3800
             };
@@ -72,13 +72,13 @@ namespace QuestEngine.Tests{
             // Arrange
             var progressData1 = new ProgressData
             {
-                PlayerId = "player1",
+                PlayerId = "player2",
                 PlayerLevel = 50,
                 ChipAmountBet = 3800
             };
             var progressData2 = new ProgressData
             {
-                PlayerId = "player1",
+                PlayerId = "player2",
                 PlayerLevel = 50,
                 ChipAmountBet = 1000
             };
