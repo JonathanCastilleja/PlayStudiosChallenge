@@ -1,3 +1,4 @@
-QuestAPI/bin
-QuestAPI/obj
+*/bin
+*/obj
 QuestAPI/QuestDB.db-*
+*/QuestDB.db-*
