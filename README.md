@@ -16,7 +16,7 @@ Follow these instructions to set up the QuestEngine solution on your local machi
 - .NET Core SDK 8.0 or later
 - A code editor or IDE, such as Visual Studio or Visual Studio Code
 
-### Installation
+### Solution Installation and Execution
 
 1. **Clone the repository**:
    ```bash
@@ -48,5 +48,9 @@ Follow these instructions to set up the QuestEngine solution on your local machi
    ```bash
    cd QuestEngine.Tests
    dotnet test
+
+## QuestEngine Web API
+For more information on configuring and using the Quest Engine API, including details on the quest 
+configuration, see the [QuestEngine.WebAPI README](QuestEngine.WebAPI/README.md).
 
 
