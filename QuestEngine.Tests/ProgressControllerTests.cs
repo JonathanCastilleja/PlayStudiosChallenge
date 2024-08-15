@@ -1,46 +1,20 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Moq;
 using QuestEngine.WebAPI.Controllers;
-using QuestEngine.WebAPI.Data;
 using QuestEngine.WebAPI.Models;
-using System.Threading.Tasks;
-using Xunit;
+using QuestEngine.WebAPI.Services;
 
-namespace QuestEngine.Tests{
-    public class ProgressControllerTests : IDisposable
+namespace QuestEngine.Tests
+{
+    public class ProgressControllerTests
     {
         private readonly ProgressController _controller;
-        private readonly QuestDbContext _context;
-        private readonly Mock<IOptions<QuestConfig>> _mockQuestConfig;
+        private readonly Mock<IProgressService> _mockProgressService;
 
         public ProgressControllerTests()
         {
-            var options = new DbContextOptionsBuilder<QuestDbContext>()
-                .UseInMemoryDatabase(databaseName: "QuestDatabase")
-                .Options;
-
-            _context = new QuestDbContext(options);
-            _mockQuestConfig = new Mock<IOptions<QuestConfig>>();
-            var questConfig = new QuestConfig{
-                RateFromBet = 0.1,
-                LevelBonusRate = 0.5,
-                TotalQuestPointsToComplete = 1000,
-                Milestones =new List<MilestoneConfig>{
-                    new() {MilestonePointsToComplete=200, ChipsAward=200},
-                    new() {MilestonePointsToComplete=400, ChipsAward=200},
-                    new() {MilestonePointsToComplete=700, ChipsAward=200}
-                }
-            };
-            _mockQuestConfig.Setup(q => q.Value).Returns(questConfig);
-            _controller = new ProgressController(_mockQuestConfig.Object, _context);
-        }
-        public void Dispose()
-        {
-            // Clean up the database after each test
-            _context.Database.EnsureDeleted();
-            _context.Dispose();
+            _mockProgressService = new Mock<IProgressService>();
+            _controller = new ProgressController(_mockProgressService.Object);
         }
 
         [Fact]
@@ -54,16 +28,31 @@ namespace QuestEngine.Tests{
                 ChipAmountBet = 3800
             };
 
+            var expectedResponse = new PostProgressResponse
+            {
+                QuestPointsEarned = 405,
+                TotalQuestPercentCompleted = 40.5,
+                MilestonesCompleted = new Milestone
+                {
+                    MilestoneIndex = 2,
+                    ChipsAwarded = 200
+                }
+            };
+
+            _mockProgressService
+                .Setup(s => s.CalculateProgress(It.IsAny<ProgressData>()))
+                .Returns(expectedResponse);
+
             // Act
             var result = _controller.Post(progressData);
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
             var questProgress = Assert.IsType<PostProgressResponse>(okResult.Value);
-            Assert.Equal(405, questProgress.QuestPointsEarned);
-            Assert.Equal(2, questProgress?.MilestonesCompleted?.MilestoneIndex);
-            Assert.Equal(200, questProgress?.MilestonesCompleted?.ChipsAwarded);
-            Assert.Equal(40.5, questProgress?.TotalQuestPercentCompleted);
+            Assert.Equal(expectedResponse.QuestPointsEarned, questProgress.QuestPointsEarned);
+            Assert.Equal(expectedResponse.MilestonesCompleted.MilestoneIndex, questProgress?.MilestonesCompleted?.MilestoneIndex);
+            Assert.Equal(expectedResponse.MilestonesCompleted.ChipsAwarded, questProgress?.MilestonesCompleted?.ChipsAwarded);
+            Assert.Equal(expectedResponse.TotalQuestPercentCompleted, questProgress?.TotalQuestPercentCompleted);
         }
 
         [Fact]
@@ -82,18 +71,33 @@ namespace QuestEngine.Tests{
                 PlayerLevel = 50,
                 ChipAmountBet = 1000
             };
+
+            var expectedResponse = new PostProgressResponse
+            {
+                QuestPointsEarned = 125,
+                TotalQuestPercentCompleted = 53.0,
+                MilestonesCompleted = new Milestone
+                {
+                    MilestoneIndex = 2,
+                    ChipsAwarded = 0
+                }
+            };
+
+            _mockProgressService
+                .Setup(s => s.CalculateProgress(It.IsAny<ProgressData>()))
+                .Returns(expectedResponse);
+
             // Act
-            _controller.Post(progressData1);
-            var result = _controller.Post(progressData2);
+            _controller.Post(progressData1); // Initial progress
+            var result = _controller.Post(progressData2); // Subsequent progress
+
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
             var questProgress = Assert.IsType<PostProgressResponse>(okResult.Value);
-            Assert.Equal(125, questProgress.QuestPointsEarned);
-            Assert.Equal(2, questProgress?.MilestonesCompleted?.MilestoneIndex);
-            Assert.Equal(0, questProgress?.MilestonesCompleted?.ChipsAwarded);
-            Assert.Equal(53.0, questProgress?.TotalQuestPercentCompleted);
-
+            Assert.Equal(expectedResponse.QuestPointsEarned, questProgress.QuestPointsEarned);
+            Assert.Equal(expectedResponse.MilestonesCompleted.MilestoneIndex, questProgress?.MilestonesCompleted?.MilestoneIndex);
+            Assert.Equal(expectedResponse.MilestonesCompleted.ChipsAwarded, questProgress?.MilestonesCompleted?.ChipsAwarded);
+            Assert.Equal(expectedResponse.TotalQuestPercentCompleted, questProgress?.TotalQuestPercentCompleted);
         }
-
     }
 }
