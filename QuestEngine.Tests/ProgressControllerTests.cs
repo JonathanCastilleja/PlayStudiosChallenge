@@ -44,12 +44,12 @@ namespace QuestEngine.Tests{
         }
 
         [Fact]
-        public void PostProgress_ReturnsOk_WhenValidData()
+        public void PostProgress_AchievedMilestone()
         {
             // Arrange
             var progressData = new ProgressData
             {
-                PlayerId = "player2",
+                PlayerId = "player1",
                 PlayerLevel = 50,
                 ChipAmountBet = 3800
             };
@@ -65,5 +65,35 @@ namespace QuestEngine.Tests{
             Assert.Equal(200, questProgress?.MilestonesCompleted?.ChipsAwarded);
             Assert.Equal(40.5, questProgress?.TotalQuestPercentCompleted);
         }
+
+        [Fact]
+        public void PostProgress_NotAchievedMilestone()
+        {
+            // Arrange
+            var progressData1 = new ProgressData
+            {
+                PlayerId = "player1",
+                PlayerLevel = 50,
+                ChipAmountBet = 3800
+            };
+            var progressData2 = new ProgressData
+            {
+                PlayerId = "player1",
+                PlayerLevel = 50,
+                ChipAmountBet = 1000
+            };
+            // Act
+            _controller.Post(progressData1);
+            var result = _controller.Post(progressData2);
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var questProgress = Assert.IsType<PostProgressResponse>(okResult.Value);
+            Assert.Equal(125, questProgress.QuestPointsEarned);
+            Assert.Equal(2, questProgress?.MilestonesCompleted?.MilestoneIndex);
+            Assert.Equal(0, questProgress?.MilestonesCompleted?.ChipsAwarded);
+            Assert.Equal(53.0, questProgress?.TotalQuestPercentCompleted);
+
+        }
+
     }
 }
