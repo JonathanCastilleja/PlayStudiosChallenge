@@ -63,6 +63,23 @@ This folder contains the implementation of the Quest Engine Web API, which provi
 ### Sequence Diagram
 ![Sequence Diagram](docs/SequenceDiagram.png)
 
+
+## Database Schema
+
+The QuestEngine Web API uses a simple SQLite database to persist player quest states. The database consists of a single table named QuestStates, which is used to store the state of quests for each player.
+
+### QuestStates Table
+The QuestStates table has the following columns:
+- PlayerId (TEXT): A unique identifier for each player.
+- TotalQuestPoints (INTEGER): The total number of quest points accumulated by the player.
+- LastMilestoneIndexCompleted (INTEGER): The index of the last milestone completed by the player.
+This table structure is sufficient for managing and storing the quest progress data of players, with a straightforward schema to support the functionalities of the API.
+
+### Schema Diagram
+Below is the schema diagram for the QuestStates table:
+![Schema Diagram](docs/DBSchema.jpg)
+
+
 ## Quest Configuration
 
 The `QuestConfig` section of the configuration file defines the parameters and milestones for the quest system. Below is an overview of the configuration values:
