@@ -28,10 +28,10 @@ namespace QuestEngine.WebAPI.Controllers
             var milestonesCompleted = _questConfig.Milestones?.Where(milestone => totalQuestPoints >= milestone.MilestonePointsToComplete).OrderBy(milestone => milestone.MilestonePointsToComplete);
             int milestoneIndex = milestonesCompleted?.Count() ?? 0;
             
-            var response = new {
-                QuestPointsEarned = totalQuestPoints,
+            var response = new PostProgressResponse{
+                QuestPointsEarned = questPointsEarned,
                 TotalQuestPercentCompleted = totalQuestPercentCompleted,
-                MilestonesCompleted = new {
+                MilestonesCompleted = new Milestone{
                     MilestoneIndex = milestoneIndex,
                     ChipsAwarded = playerQuestState?.LastMilestoneIndexCompleted == milestoneIndex? 0:
                         milestonesCompleted?.LastOrDefault()?.ChipsAward ?? 0

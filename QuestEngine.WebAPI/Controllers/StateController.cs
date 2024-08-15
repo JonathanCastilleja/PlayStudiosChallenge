@@ -26,7 +26,7 @@ namespace QuestEngine.WebAPI.Controllers
                 return NotFound();
             }
             
-            var response = new {
+            var response = new GetStateResponse{
                 TotalQuestPercentCompleted = (double) 100 * playerQuestState.TotalQuestPoints / _questConfig.TotalQuestPointsToComplete,
                 LastMilestoneIndexCompleted = playerQuestState.LastMilestoneIndexCompleted
             };
