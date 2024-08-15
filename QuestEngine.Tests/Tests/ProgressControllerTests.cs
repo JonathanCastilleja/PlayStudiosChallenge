@@ -1,6 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Moq;
 using QuestEngine.WebAPI.Controllers;
+using QuestEngine.WebAPI.Data;
 using QuestEngine.WebAPI.Models;
 using QuestEngine.WebAPI.Services;
 
@@ -9,12 +12,32 @@ namespace QuestEngine.Tests
     public class ProgressControllerTests
     {
         private readonly ProgressController _controller;
+        private readonly Mock<IOptions<QuestConfig>> _mockOptions;
         private readonly Mock<IProgressService> _mockProgressService;
 
         public ProgressControllerTests()
         {
             _mockProgressService = new Mock<IProgressService>();
-            _controller = new ProgressController(_mockProgressService.Object);
+            _mockOptions = new Mock<IOptions<QuestConfig>>();
+            var questConfig = new QuestConfig
+            {
+                RateFromBet = 0.1,
+                LevelBonusRate = 0.5,
+                TotalQuestPointsToComplete = 1000,
+                Milestones = new List<MilestoneConfig>
+                {
+                    new() { MilestonePointsToComplete = 200, ChipsAward = 200 },
+                    new() { MilestonePointsToComplete = 400, ChipsAward = 200 },
+                    new() { MilestonePointsToComplete = 700, ChipsAward = 200 }
+                }
+            };
+            _mockOptions.Setup(o => o.Value).Returns(questConfig);
+
+            var progressService = new ProgressService(_mockOptions.Object, new QuestDbContext(new DbContextOptionsBuilder<QuestDbContext>()
+                .UseInMemoryDatabase(databaseName: "QuestDatabase")
+                .Options));
+            
+            _controller = new ProgressController(progressService);
         }
 
         [Fact]
@@ -23,7 +46,7 @@ namespace QuestEngine.Tests
             // Arrange
             var progressData = new ProgressData
             {
-                PlayerId = "player2",
+                PlayerId = "progress1",
                 PlayerLevel = 50,
                 ChipAmountBet = 3800
             };
@@ -61,13 +84,13 @@ namespace QuestEngine.Tests
             // Arrange
             var progressData1 = new ProgressData
             {
-                PlayerId = "player2",
+                PlayerId = "progress2",
                 PlayerLevel = 50,
                 ChipAmountBet = 3800
             };
             var progressData2 = new ProgressData
             {
-                PlayerId = "player2",
+                PlayerId = "progress2",
                 PlayerLevel = 50,
                 ChipAmountBet = 1000
             };

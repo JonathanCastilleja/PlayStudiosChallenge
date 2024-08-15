@@ -1,8 +1,5 @@
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using QuestEngine.WebAPI.Data;
-using QuestEngine.WebAPI.Models;
+using QuestEngine.WebAPI.Services;
 
 namespace QuestEngine.WebAPI.Controllers
 {
@@ -10,27 +7,22 @@ namespace QuestEngine.WebAPI.Controllers
     [ApiController]
     public class StateController : ControllerBase
     {
-        private readonly QuestConfig _questConfig;
-        private readonly QuestDbContext _context;
-        public StateController(IOptions<QuestConfig> questConfig, QuestDbContext context)
+        private readonly IStateService _stateService;
+
+        public StateController(IStateService stateService)
         {
-            _questConfig = questConfig.Value;
-            _context = context;
+            _stateService = stateService;
         }
 
         [HttpGet]
-        public IActionResult Get(string playerId){
-            var playerQuestState = _context.QuestStates.FirstOrDefault(qs => qs.PlayerId == playerId);
+        public IActionResult Get(string playerId)
+        {
+            var response = _stateService.GetState(playerId);
 
-            if (playerQuestState == null){
+            if (response == null)
+            {
                 return NotFound();
             }
-            
-            var response = new GetStateResponse{
-                TotalQuestPercentCompleted = (double) 100 * playerQuestState.TotalQuestPoints / _questConfig.TotalQuestPointsToComplete,
-                LastMilestoneIndexCompleted = playerQuestState.LastMilestoneIndexCompleted
-            };
-
             return Ok(response);
         }
     }

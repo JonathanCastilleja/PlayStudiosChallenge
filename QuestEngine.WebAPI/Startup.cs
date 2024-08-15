@@ -16,6 +16,7 @@ namespace QuestEngine.WebAPI{
             services.AddDbContext<QuestDbContext>(options => options.UseSqlite("Data Source=QuestDB.db"));
             services.AddControllers();
             services.AddScoped<IProgressService, ProgressService>();
+            services.AddScoped<IStateService, StateService>();
             services.AddSwaggerGen();
             services.Configure<QuestConfig>(Configuration.GetSection("QuestConfig"));
         }
