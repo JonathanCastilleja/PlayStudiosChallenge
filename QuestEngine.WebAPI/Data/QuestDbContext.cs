@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.EntityFrameworkCore;
 
-namespace QuestAPI.Data{
+namespace QuestEngine.WebAPI.Data{
 
     public class QuestDbContext : DbContext
     {

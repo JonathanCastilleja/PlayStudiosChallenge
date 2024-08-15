@@ -1,7 +1,7 @@
 
 using System.Diagnostics;
 
-namespace QuestAPI
+namespace QuestEngine.WebAPI
 {
     public class Program
     {

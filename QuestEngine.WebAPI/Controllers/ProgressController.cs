@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using QuestAPI.Data;
-using QuestAPI.Models;
+using QuestEngine.WebAPI.Data;
+using QuestEngine.WebAPI.Models;
 
-namespace QuestAPI.Controllers
+namespace QuestEngine.WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

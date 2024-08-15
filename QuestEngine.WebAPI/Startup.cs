@@ -1,9 +1,9 @@
 using System;
 using Microsoft.EntityFrameworkCore;
-using QuestAPI.Data;
-using QuestAPI.Models;
+using QuestEngine.WebAPI.Data;
+using QuestEngine.WebAPI.Models;
 
-namespace QuestAPI{
+namespace QuestEngine.WebAPI{
     public class Startup{
         public Startup(IConfiguration configuration){
             Configuration = configuration;

@@ -1,4 +1,4 @@
-namespace QuestAPI.Models;
+namespace QuestEngine.WebAPI.Models;
 
 public class ProgressData
 {
