@@ -44,7 +44,7 @@ Follow these instructions to set up the QuestEngine solution on your local machi
    Adjust the port number in the URL according to the console output if it's different.
 
 7. **Run the API tests**:
-   Navigate to the QuestEngine.Tests folder and run the unit tests:
+   Navigate from root of repository to the QuestEngine.Tests folder and run the unit tests:
    ```bash
    cd QuestEngine.Tests
    dotnet test
