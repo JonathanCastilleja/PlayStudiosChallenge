@@ -13,12 +13,14 @@ namespace QuestAPI.Controllers
             double rateFromBet = 0.1; //TODO move to config file
             double levelBonusRate = 0.5; //TODO move to config file
             int totalQuestPointsToComplete = 1000; //TODO move to config file
+            int milestonesPerQuest = 10; //TODO move to config file
             int questPointsEarned = (int)((progressData.ChipAmountBet * rateFromBet) + (progressData.PlayerLevel * levelBonusRate));
-            int totalQuestPercentCompleted = 100 * questPointsEarned / totalQuestPointsToComplete;
+            double totalQuestPercentCompleted = (double) 100 * questPointsEarned / totalQuestPointsToComplete;
+            int milestonesCompleted = questPointsEarned / (totalQuestPointsToComplete / milestonesPerQuest);
             var response = new {
                 QuestPointsEarned = questPointsEarned,
                 TotalQuestPercentCompleted = totalQuestPercentCompleted,
-                MilestonesCompleted = 0
+                MilestonesCompleted = milestonesCompleted
             };
             return Ok(response);
         }
