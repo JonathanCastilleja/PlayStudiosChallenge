@@ -20,7 +20,7 @@ namespace QuestEngine.WebAPI.Controllers
 
         [HttpPost]
         public IActionResult Post([FromBody]ProgressData progressData){
-            var playerQuestState = _context.QuestStates.FirstOrDefault(qs => qs.PlayerId == progressData.PlayerID);
+            var playerQuestState = _context.QuestStates.FirstOrDefault(qs => qs.PlayerId == progressData.PlayerId);
 
             int questPointsEarned = (int)((progressData.ChipAmountBet * _questConfig.RateFromBet) + (progressData.PlayerLevel * _questConfig.LevelBonusRate));
             int totalQuestPoints = questPointsEarned + (playerQuestState?.TotalQuestPoints ?? 0); 
@@ -45,7 +45,7 @@ namespace QuestEngine.WebAPI.Controllers
             }
             else{
                 _context.QuestStates.Add(new QuestState{
-                    PlayerId = progressData.PlayerID,
+                    PlayerId = progressData.PlayerId,
                     TotalQuestPoints = totalQuestPoints,
                     LastMilestoneIndexCompleted = milestoneIndex
                     }

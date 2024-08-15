@@ -9,23 +9,20 @@ using System.Threading.Tasks;
 using Xunit;
 
 namespace QuestEngine.Tests{
-    public class StateControllerTests : IDisposable
+    public class ProgressControllerTests : IDisposable
     {
-        private readonly StateController _controller;
+        private readonly ProgressController _controller;
         private readonly QuestDbContext _context;
         private readonly Mock<IOptions<QuestConfig>> _mockQuestConfig;
 
-        public StateControllerTests()
+        public ProgressControllerTests()
         {
             var options = new DbContextOptionsBuilder<QuestDbContext>()
                 .UseInMemoryDatabase(databaseName: "QuestDatabase")
                 .Options;
 
             _context = new QuestDbContext(options);
-            _context.QuestStates.Add(new QuestState { PlayerId = "player1", TotalQuestPoints = 50, LastMilestoneIndexCompleted = 1 });
-            _context.SaveChanges();
-
-            // Configure mock IOptions<QuestConfig>
+            _mockQuestConfig = new Mock<IOptions<QuestConfig>>();
             var questConfig = new QuestConfig{
                 RateFromBet = 0.1,
                 LevelBonusRate = 0.5,
@@ -36,10 +33,8 @@ namespace QuestEngine.Tests{
                     new() {MilestonePointsToComplete=700, ChipsAward=200}
                 }
             };
-            _mockQuestConfig = new Mock<IOptions<QuestConfig>>();
             _mockQuestConfig.Setup(q => q.Value).Returns(questConfig);
-
-            _controller = new StateController(_mockQuestConfig.Object, _context);
+            _controller = new ProgressController(_mockQuestConfig.Object, _context);
         }
         public void Dispose()
         {
@@ -49,26 +44,26 @@ namespace QuestEngine.Tests{
         }
 
         [Fact]
-        public void GetQuestState_ReturnsOk_WhenPlayerIdExists()
+        public void PostProgress_ReturnsOk_WhenValidData()
         {
+            // Arrange
+            var progressData = new ProgressData
+            {
+                PlayerId = "player2",
+                PlayerLevel = 50,
+                ChipAmountBet = 3800
+            };
+
             // Act
-            var result = _controller.Get("player1");
+            var result = _controller.Post(progressData);
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var questState = Assert.IsType<GetStateResponse>(okResult.Value);
-            Assert.Equal(5, questState.TotalQuestPercentCompleted);
-            Assert.Equal(1, questState.LastMilestoneIndexCompleted);
-        }
-
-        [Fact]
-        public void GetQuestState_ReturnsNotFound_WhenPlayerIdDoesNotExist()
-        {
-            // Act
-            var result = _controller.Get("nonexistent_player");
-
-            // Assert
-            Assert.IsType<NotFoundResult>(result);
+            var questProgress = Assert.IsType<PostProgressResponse>(okResult.Value);
+            Assert.Equal(405, questProgress.QuestPointsEarned);
+            Assert.Equal(2, questProgress?.MilestonesCompleted?.MilestoneIndex);
+            Assert.Equal(200, questProgress?.MilestonesCompleted?.ChipsAwarded);
+            Assert.Equal(40.5, questProgress?.TotalQuestPercentCompleted);
         }
     }
 }
