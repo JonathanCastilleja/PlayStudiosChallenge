@@ -1,4 +1,6 @@
 using System;
+using Microsoft.EntityFrameworkCore;
+using QuestAPI.Data;
 using QuestAPI.Models;
 
 namespace QuestAPI{
@@ -10,6 +12,7 @@ namespace QuestAPI{
         public IConfiguration Configuration { get; }
 
         public void ConfigureServices(IServiceCollection services){
+            services.AddDbContext<QuestDbContext>(options => options.UseSqlite("Data Source=QuestDB.db"));
             services.AddControllers();
             services.AddSwaggerGen();
             services.Configure<QuestConfig>(Configuration.GetSection("QuestConfig"));
