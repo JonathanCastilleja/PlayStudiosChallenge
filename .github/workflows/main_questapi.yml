@@ -29,7 +29,10 @@ jobs:
       
       - name: dotnet publish
         run: dotnet publish -c Release -o Release/myapp
-
+      
+      - name: Copy DataBase
+        run: cp QuestEngine.WebAPI/QuestDB.db Release/myapp/QuestDB.db
+             
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
