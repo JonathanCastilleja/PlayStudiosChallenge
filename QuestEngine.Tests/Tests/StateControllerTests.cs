@@ -50,7 +50,7 @@ namespace QuestEngine.Tests
 
             _mockStateService
                 .Setup(s => s.GetState(playerId))
-                .Returns((GetStateResponse)null);
+                .Returns((GetStateResponse?)null);
 
             // Act
             var result = _controller.Get(playerId);

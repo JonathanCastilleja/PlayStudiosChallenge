@@ -9,15 +9,13 @@ using QuestEngine.WebAPI.Services;
 
 namespace QuestEngine.Tests
 {
-    public class ProgressControllerTests
+    public class ProgressServiceTests
     {
         private readonly ProgressController _controller;
         private readonly Mock<IOptions<QuestConfig>> _mockOptions;
-        private readonly Mock<IProgressService> _mockProgressService;
 
-        public ProgressControllerTests()
+        public ProgressServiceTests()
         {
-            _mockProgressService = new Mock<IProgressService>();
             _mockOptions = new Mock<IOptions<QuestConfig>>();
             var questConfig = new QuestConfig
             {
@@ -62,10 +60,6 @@ namespace QuestEngine.Tests
                 }
             };
 
-            _mockProgressService
-                .Setup(s => s.CalculateProgress(It.IsAny<ProgressData>()))
-                .Returns(expectedResponse);
-
             // Act
             var result = _controller.Post(progressData);
 
@@ -105,10 +99,6 @@ namespace QuestEngine.Tests
                     ChipsAwarded = 0
                 }
             };
-
-            _mockProgressService
-                .Setup(s => s.CalculateProgress(It.IsAny<ProgressData>()))
-                .Returns(expectedResponse);
 
             // Act
             _controller.Post(progressData1); // Initial progress
